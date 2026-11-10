@@ -43,7 +43,6 @@ function createCardElement(card, imageName, count) {
     const fields = [
         { key: "minerals", label: "Minerals" },
         { key: "gas", label: "Gas" },
-        { key: "stars", label: "Stars" },
     ];
 
     fields.forEach(({ key, label }) => {
@@ -70,6 +69,25 @@ function createCardElement(card, imageName, count) {
     body.appendChild(stats);
     cardEl.appendChild(body);
     cardEl.appendChild(countEl);
+
+    const stars = card.stars || 0;
+    if (stars > 0) {
+        cardEl.classList.add("glow-gold");
+        for (let i = 0; i < stars; i++) {
+            const star = document.createElement("img");
+            star.src = `${IMG_DIR}/gold_star.png`;
+            star.alt = "★";
+            star.style.position = "absolute";
+            star.style.bottom = "10px";
+            star.style.left = `${10 + i * 24}px`;
+            star.style.width = "20px";
+            star.style.height = "20px";
+            star.style.zIndex = "2";
+            star.style.pointerEvents = "none";
+            cardEl.appendChild(star);
+        }
+    }
+
     return cardEl;
 }
 
