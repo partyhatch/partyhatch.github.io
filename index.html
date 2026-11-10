@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Party Hatch — Cards</title>
+    <style>
+        :root {
+            --bg: #f5f5f7;
+            --card-bg: #ffffff;
+            --text: #1a1a1a;
+            --muted: #666666;
+            --border: #dddddd;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #121212;
+                --card-bg: #1e1e1e;
+                --text: #eaeaea;
+                --muted: #aaaaaa;
+                --border: #333333;
+            }
+        }
+        [data-theme="dark"] {
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --text: #eaeaea;
+            --muted: #aaaaaa;
+            --border: #333333;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 24px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding-block: 24px;
+        }
+        h1 { margin: 0 0 20px; font-size: 1.5rem; }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            width: 100%;
+            aspect-ratio: 3 / 4.5;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.55));
+            pointer-events: none;
+        }
+        .card-body {
+            position: relative;
+            z-index: 1;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            color: var(--text);
+        }
+        .card-name {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .card-stats {
+            margin-top: auto;
+            display: flex;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        .stat { font-weight: 600; color: var(--text); }
+        .empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--muted);
+            padding: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Party Hatch</h1>
+    <div id="card-grid" class="card-grid"></div>
+    <script src="partyhatch.js"></script>
+</body>
+</html>
