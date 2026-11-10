@@ -117,9 +117,24 @@ async function loadDeck(deckFile) {
     return section;
 }
 
+function showMenu() {
+    const menu = document.getElementById("menu-screen");
+    const decks = document.getElementById("decks-screen");
+    if (menu) menu.classList.add("visible");
+    if (decks) decks.classList.remove("visible");
+}
+
+function showDecks() {
+    const menu = document.getElementById("menu-screen");
+    const decks = document.getElementById("decks-screen");
+    if (menu) menu.classList.remove("visible");
+    if (decks) decks.classList.add("visible");
+}
+
 async function loadAllDecks() {
     const container = document.getElementById("decks-container");
     if (!container) return;
+    container.innerHTML = "";
 
     try {
         const sections = await Promise.all(
@@ -141,4 +156,19 @@ async function loadAllDecks() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", loadAllDecks);
+document.addEventListener("DOMContentLoaded", () => {
+    showMenu();
+
+    const btnViewDecks = document.getElementById("btn-view-decks");
+    if (btnViewDecks) {
+        btnViewDecks.addEventListener("click", () => {
+            showDecks();
+            loadAllDecks();
+        });
+    }
+
+    const btnReturnMenu = document.getElementById("btn-return-menu");
+    if (btnReturnMenu) {
+        btnReturnMenu.addEventListener("click", showMenu);
+    }
+});

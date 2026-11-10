@@ -88,6 +88,81 @@
         .deck-section:last-child {
             margin-bottom: 0;
         }
+        /* Menu screen */
+        .screen {
+            display: none;
+        }
+        .screen.visible {
+            display: block;
+        }
+        #menu-screen {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 48px);
+            text-align: center;
+            padding-block: 24px;
+        }
+        #menu-screen.visible {
+            display: flex;
+        }
+        .menu-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: min(320px, 90vw);
+        }
+        .menu-options button {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text);
+        }
+        .menu-options button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.6);
+        }
+        .menu-options button:not(:disabled):hover {
+            filter: brightness(1.1);
+        }
+        #view-decks {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #fff;
+        }
+        #view-decks:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+
+        /* Decks screen controls */
+        .decks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .return-btn {
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text);
+        }
+        .return-btn:hover {
+            filter: brightness(1.1);
+        }
+
         .card-body {
             position: relative;
             z-index: 1;
@@ -120,8 +195,23 @@
     </style>
 </head>
 <body>
-    <h1>Party Hatch</h1>
-    <div id="decks-container"></div>
+    <div id="menu-screen" class="screen visible">
+        <h1>Party Hatch</h1>
+        <div class="menu-options">
+            <button id="btn-solo" disabled>Play Solo</button>
+            <button id="btn-versus" disabled>Play Versus</button>
+            <button id="btn-view-decks">View Decks</button>
+        </div>
+    </div>
+
+    <div id="decks-screen" class="screen">
+        <div class="decks-header">
+            <h2 id="decks-title">Decks</h2>
+            <button id="btn-return-menu" class="return-btn">Return to Menu</button>
+        </div>
+        <div id="decks-container"></div>
+    </div>
+
     <script src="partyhatch.js"></script>
 </body>
 </html>
