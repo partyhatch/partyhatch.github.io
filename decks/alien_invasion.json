@@ -1,0 +1,17 @@
+{
+    "name": "Alien Invasion",
+    "cards": [ 
+        { 
+            "card": "probe",
+            "count": 6
+        },
+        { 
+            "card": "scv",
+            "count": 6
+        },
+        { 
+            "card": "drone",
+            "count": 0
+        }
+    ]
+}

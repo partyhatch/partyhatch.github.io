@@ -78,6 +78,16 @@
             border-radius: 10px;
             backdrop-filter: blur(3px);
         }
+        .card.trouble {
+            border-color: #ff0000;
+            box-shadow: 0 0 0 3px #ff0000, 0 0 24px rgba(255, 0, 0, 0.6);
+        }
+        .deck-section {
+            margin-bottom: 48px;
+        }
+        .deck-section:last-child {
+            margin-bottom: 0;
+        }
         .card-body {
             position: relative;
             z-index: 1;
@@ -110,8 +120,8 @@
     </style>
 </head>
 <body>
-    <h1 id="deck-name">Party Hatch</h1>
-    <div id="card-grid" class="card-grid"></div>
+    <h1>Party Hatch</h1>
+    <div id="decks-container"></div>
     <script src="partyhatch.js"></script>
 </body>
 </html>
