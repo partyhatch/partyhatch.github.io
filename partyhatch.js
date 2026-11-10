@@ -15,10 +15,14 @@ function resolveImage(card) {
     return card.image || card.img_name || card.name;
 }
 
-function createCardElement(card, imageName) {
+function createCardElement(card, imageName, count) {
     const cardEl = document.createElement("div");
     cardEl.className = "card";
     cardEl.style.backgroundImage = `url("${IMG_DIR}/${imageName}.png")`;
+
+    const countEl = document.createElement("span");
+    countEl.className = "card-count";
+    countEl.textContent = `×${count}`;
 
     const body = document.createElement("div");
     body.className = "card-body";
@@ -59,6 +63,7 @@ function createCardElement(card, imageName) {
     body.appendChild(name);
     body.appendChild(stats);
     cardEl.appendChild(body);
+    cardEl.appendChild(countEl);
     return cardEl;
 }
 
@@ -71,14 +76,21 @@ async function loadDeck() {
         if (!deckResp.ok) throw new Error(`Deck fetch failed: ${deckResp.status}`);
         const deck = await deckResp.json();
 
-        const cardNames = deck.cards || [];
-        if (cardNames.length === 0) {
+        const deckNameEl = document.getElementById("deck-name");
+        if (deckNameEl && deck.name) {
+            deckNameEl.textContent = deck.name;
+        }
+
+        const cardEntries = deck.cards || [];
+        if (cardEntries.length === 0) {
             grid.innerHTML = '<div class="empty">No cards in deck.</div>';
             return;
         }
 
         await Promise.all(
-            cardNames.map(async (name) => {
+            cardEntries.map(async (entry) => {
+                const name = entry.card || entry;
+                const count = entry.count != null ? entry.count : 1;
                 try {
                     const cardResp = await fetch(`${CARDS_DIR}/${name}.json`);
                     if (!cardResp.ok) {
@@ -87,7 +99,7 @@ async function loadDeck() {
                     }
                     const card = await cardResp.json();
                     const imageName = resolveImage(card);
-                    grid.appendChild(createCardElement(card, imageName));
+                    grid.appendChild(createCardElement(card, imageName, count));
                 } catch (err) {
                     console.warn(`Failed to load card "${name}":`, err);
                 }
