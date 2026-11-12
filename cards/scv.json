@@ -1,7 +1,8 @@
 {
     "name": "SCV",
     "image": "scv",
-    "minerals": 1,
+    "minerals": 2,
     "gas": 0,
-    "stars": 0
+    "stars": 0,
+    "cost": 2
 }

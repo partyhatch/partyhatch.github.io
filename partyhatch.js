@@ -55,7 +55,7 @@ function createCardElement(card, imageName, count) {
     });
 
     // Render any remaining top-level fields not already shown (e.g. "trouble")
-    const shown = new Set(["name", "image", "img_name", "minerals", "gas", "stars", "trouble"]);
+    const shown = new Set(["name", "image", "img_name", "minerals", "gas", "stars", "trouble", "cost"]);
     Object.keys(card).forEach((key) => {
         if (!shown.has(key)) {
             const stat = document.createElement("span");
@@ -86,6 +86,42 @@ function createCardElement(card, imageName, count) {
             star.style.pointerEvents = "none";
             cardEl.appendChild(star);
         }
+    }
+
+    // Cost badge: shown in the top-right corner when the card JSON defines a
+    // "cost", with a mineral icon to its left.
+    if ("cost" in card) {
+        const costBadge = document.createElement("div");
+        costBadge.style.position = "absolute";
+        costBadge.style.top = "10px";
+        costBadge.style.right = "10px";
+        costBadge.style.zIndex = "2";
+        costBadge.style.pointerEvents = "none";
+        costBadge.style.display = "inline-flex";
+        costBadge.style.alignItems = "center";
+        costBadge.style.gap = "6px";
+        costBadge.style.fontSize = "1.2rem";
+        costBadge.style.fontWeight = "800";
+        costBadge.style.color = "#fff";
+        costBadge.style.textShadow = "0 1px 3px rgba(0,0,0,0.7)";
+        costBadge.style.background = "rgba(0,0,0,0.45)";
+        costBadge.style.padding = "2px 8px";
+        costBadge.style.borderRadius = "10px";
+        costBadge.style.backdropFilter = "blur(3px)";
+
+        const icon = document.createElement("img");
+        icon.src = `${IMG_DIR}/mineral_nobg.png`;
+        icon.alt = "";
+        icon.style.width = "16px";
+        icon.style.height = "16px";
+        icon.style.display = "block";
+
+        const value = document.createElement("span");
+        value.textContent = card.cost;
+
+        costBadge.appendChild(icon);
+        costBadge.appendChild(value);
+        cardEl.appendChild(costBadge);
     }
 
     return cardEl;
