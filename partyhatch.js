@@ -30,7 +30,7 @@ function createCardElement(card, imageName, count) {
 
     const countEl = document.createElement("span");
     countEl.className = "card-count";
-    countEl.textContent = `×${count}`;
+    countEl.textContent = count < 0 ? "∞" : `×${count}`;
 
     const body = document.createElement("div");
     body.className = "card-body";
