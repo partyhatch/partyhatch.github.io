@@ -3,6 +3,5 @@
     "image": "drone",
     "minerals": 0,
     "gas": 0,
-    "stars": 0,
-    "trouble": true
+    "trouble": 1
 }

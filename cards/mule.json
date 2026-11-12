@@ -1,0 +1,7 @@
+{
+    "name": "MULE",
+    "image": "mule",
+    "cost": 5,
+    "minerals": 4,
+    "gas": -1
+}

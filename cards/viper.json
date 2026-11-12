@@ -1,0 +1,8 @@
+{
+    "name": "Viper",
+    "image": "viper",
+    "cost": 3,
+    "minerals": 0,
+    "gas": 0,
+    "ability": "fetch"
+}

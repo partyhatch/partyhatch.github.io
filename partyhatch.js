@@ -21,8 +21,10 @@ function resolveImage(card) {
 function createCardElement(card, imageName, count) {
     const cardEl = document.createElement("div");
     cardEl.className = "card";
-    if (card.trouble) {
+    if (card.trouble > 0) {
         cardEl.classList.add("trouble");
+    } else if (card.trouble < 0) {
+        cardEl.classList.add("trouble-blue");
     }
     cardEl.style.backgroundImage = `url("${IMG_DIR}/${imageName}.png")`;
 

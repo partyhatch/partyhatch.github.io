@@ -1,0 +1,8 @@
+{
+    "name": "Observer",
+    "image": "observer",
+    "cost": 2,
+    "minerals": 2,
+    "gas": 0,
+    "ability": "peek"
+}

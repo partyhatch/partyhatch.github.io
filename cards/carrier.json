@@ -1,0 +1,8 @@
+{
+    "name": "Carrier",
+    "image": "carrier",
+    "cost": 5,
+    "minerals": 0,
+    "gas": 0,
+    "scoring": "scaling"
+}

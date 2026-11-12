@@ -1,8 +1,7 @@
 {
     "name": "Probe",
     "image": "probe",
+    "cost": 3,
     "minerals": 0,
-    "gas": 1,
-    "stars": 0,
-    "cost": 3
+    "gas": 1
 }

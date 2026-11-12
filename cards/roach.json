@@ -1,0 +1,8 @@
+{
+    "name": "Roach",
+    "image": "roach",
+    "cost": 5,
+    "minerals": 0,
+    "gas": -1,
+    "scoring": "full_house"
+}

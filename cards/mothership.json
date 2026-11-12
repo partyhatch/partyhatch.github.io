@@ -1,0 +1,8 @@
+{
+    "name": "Mothership",
+    "image": "mothership",
+    "cost": 40,
+    "minerals": 0,
+    "gas": 0,
+    "stars": 1
+}

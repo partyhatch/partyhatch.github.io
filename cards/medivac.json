@@ -1,0 +1,8 @@
+{
+    "name": "Medivac",
+    "image": "medivac",
+    "cost": 5,
+    "minerals": 3,
+    "gas": 0,
+    "draw": "plus_one"
+}

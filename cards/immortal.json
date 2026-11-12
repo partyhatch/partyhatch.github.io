@@ -1,0 +1,8 @@
+{
+    "name": "Immortal",
+    "image": "immortal",
+    "cost": 5,
+    "minerals": 3,
+    "gas": 2,
+    "trouble": 1
+}

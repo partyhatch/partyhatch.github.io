@@ -12,6 +12,58 @@
         { 
             "card": "drone",
             "count": 0
+        },
+        { 
+            "card": "viper",
+            "count": 6
+        },
+        { 
+            "card": "zergling",
+            "count": 6
+        },
+        { 
+            "card": "marauder",
+            "count": 6
+        },
+        { 
+            "card": "queen",
+            "count": 6
+        },
+        { 
+            "card": "observer",
+            "count": 6
+        },
+        { 
+            "card": "medic",
+            "count": 6
+        },
+        { 
+            "card": "immortal",
+            "count": 6
+        },
+        { 
+            "card": "roach",
+            "count": 6
+        },
+        { 
+            "card": "mule",
+            "count": 6
+        },
+        { 
+            "card": "medivac",
+            "count": 6
+        },
+        { 
+            "card": "carrier",
+            "count": 6
+        },
+        { 
+            "card": "dark_templar",
+            "count": 6
+        },
+        { 
+            "card": "mothership",
+            "count": -1
         }
     ],
     "deck": [ "probe" ]

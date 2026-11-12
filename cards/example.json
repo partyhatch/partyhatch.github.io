@@ -1,8 +1,8 @@
 {
     "name": "Example",
     "image": "example",
+    "cost": 1,
     "minerals": 1,
     "gas": -1,
-    "stars": 2,
-    "cost": 1
+    "stars": 2
 }

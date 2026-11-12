@@ -1,0 +1,8 @@
+{
+    "name": "Medic",
+    "image": "medic",
+    "cost": 4,
+    "minerals": 1,
+    "gas": 0,
+    "trouble": -1
+}

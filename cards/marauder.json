@@ -1,0 +1,8 @@
+{
+    "name": "Marauder",
+    "image": "marauder",
+    "cost": 4,
+    "minerals": 0,
+    "gas": 0,
+    "ability": "kick"
+}
