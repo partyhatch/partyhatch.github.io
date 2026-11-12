@@ -40,18 +40,40 @@ function createCardElement(card, imageName, count) {
     const stats = document.createElement("div");
     stats.className = "card-stats";
 
-    const fields = [
-        { key: "minerals", label: "Minerals" },
-        { key: "gas", label: "Gas" },
-    ];
+    // Minerals and gas are shown as centered resource text (resources div below).
+    const resourceParts = [];
+    if ("minerals" in card && card.minerals != 0) {
+        resourceParts.push({ value: card.minerals, image: "mineral_nobg.png" });
+    }
+    if ("gas" in card && card.gas != 0) {
+        resourceParts.push({ value: card.gas, image: "gas_nobg.png" });
+    }
 
-    fields.forEach(({ key, label }) => {
-        if (key in card) {
-            const stat = document.createElement("span");
-            stat.className = "stat";
-            stat.textContent = `${label}: ${card[key]}`;
-            stats.appendChild(stat);
-        }
+    const resources = document.createElement("div");
+    resources.className = "card-resources";
+    resources.style.position = "absolute";
+    resources.style.top = "75%";
+    resources.style.left = "50%";
+    resources.style.transform = "translate(-50%, -50%)";
+    resources.style.display = "flex";
+    resources.style.alignItems = "center";
+    resources.style.gap = "10px";
+    resources.style.fontSize = "1.15rem";
+    resources.style.fontWeight = "800";
+    resources.style.color = "var(--text)";
+    resources.style.pointerEvents = "none";
+
+    resourceParts.forEach(({ value, image }) => {
+        const text = document.createElement("span");
+        text.textContent = value > 0 ? `+${value}` : value;
+        resources.appendChild(text);
+        const icon = document.createElement("img");
+        icon.src = `${IMG_DIR}/${image}`;
+        icon.alt = "";
+        icon.style.width = "22px";
+        icon.style.height = "22px";
+        icon.style.display = "block";
+        resources.appendChild(icon);
     });
 
     // Render any remaining top-level fields not already shown (e.g. "trouble")
@@ -66,6 +88,9 @@ function createCardElement(card, imageName, count) {
     });
 
     body.appendChild(name);
+    if (resources.children.length) {
+        body.appendChild(resources);
+    }
     body.appendChild(stats);
     cardEl.appendChild(body);
     cardEl.appendChild(countEl);
