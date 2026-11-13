@@ -13,12 +13,26 @@ const DECK_FILES = ["example_deck", "alien_invasion"];
 const DECKS_DIR = "decks";
 const CARDS_DIR = "cards";
 const IMG_DIR = "img";
+const LOC_DIR = "loc";
+
+// Cache for tooltip text loaded from loc/*.json (keyed by icon basename).
+const locCache = new Map();
+
+async function getLoc(iconName) {
+    if (locCache.has(iconName)) return locCache.get(iconName);
+    const resp = await fetch(`${LOC_DIR}/${iconName}.json`);
+    if (!resp.ok) return "";
+    const data = await resp.json();
+    const text = data.english || "";
+    locCache.set(iconName, text);
+    return text;
+}
 
 function resolveImage(card) {
     return card.image || card.img_name || card.name;
 }
 
-function createCardElement(card, imageName, count) {
+async function createCardElement(card, imageName, count) {
     const cardEl = document.createElement("div");
     cardEl.className = "card";
     if (card.trouble > 0) {
@@ -100,17 +114,18 @@ function createCardElement(card, imageName, count) {
     const stars = card.stars || 0;
     if (stars > 0) {
         cardEl.classList.add("glow-gold");
+        const starLoc = await getLoc("star");
         for (let i = 0; i < stars; i++) {
             const star = document.createElement("img");
             star.src = `${IMG_DIR}/star.png`;
             star.alt = "★";
+            star.title = starLoc;
             star.style.position = "absolute";
             star.style.bottom = "10px";
             star.style.left = `${10 + i * 24}px`;
             star.style.width = "22px";
             star.style.height = "22px";
             star.style.zIndex = "2";
-            star.style.pointerEvents = "none";
             cardEl.appendChild(star);
         }
     }
@@ -120,19 +135,21 @@ function createCardElement(card, imageName, count) {
     // trouble shows heal.png icons equal to the absolute value.
     const trouble = card.trouble || 0;
     if (trouble !== 0) {
+        const troubleLocName = trouble > 0 ? "fungal" : "heal";
+        const troubleLoc = await getLoc(troubleLocName);
         const iconSrc = trouble > 0 ? `${IMG_DIR}/fungal.png` : `${IMG_DIR}/heal.png`;
         const count = Math.abs(trouble);
         for (let i = 0; i < count; i++) {
             const troubleIcon = document.createElement("img");
             troubleIcon.src = iconSrc;
             troubleIcon.alt = "";
+            troubleIcon.title = troubleLoc;
             troubleIcon.style.position = "absolute";
             troubleIcon.style.bottom = "10px";
             troubleIcon.style.left = `${10 + i * 24}px`;
             troubleIcon.style.width = "22px";
             troubleIcon.style.height = "22px";
             troubleIcon.style.zIndex = "2";
-            troubleIcon.style.pointerEvents = "none";
             cardEl.appendChild(troubleIcon);
         }
     }
@@ -210,7 +227,7 @@ async function loadDeck(deckFile) {
                 }
                 const card = await cardResp.json();
                 const imageName = resolveImage(card);
-                grid.appendChild(createCardElement(card, imageName, count));
+                grid.appendChild(await createCardElement(card, imageName, count));
             } catch (err) {
                 console.warn(`Failed to load card "${name}":`, err);
             }
