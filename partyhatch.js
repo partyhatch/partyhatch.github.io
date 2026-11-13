@@ -373,9 +373,43 @@ function renderStats() {
     const elMinerals = document.getElementById("stat-minerals");
     const elGas = document.getElementById("stat-gas");
     const elSupply = document.getElementById("stat-supply");
-    if (elMinerals) elMinerals.textContent = `Minerals: ${minerals}`;
-    if (elGas) elGas.textContent = `Gas: ${gas}`;
-    if (elSupply) elSupply.textContent = `Supply: ${hand.length}/${supply}`;
+
+    function makeStat(iconName, value) {
+        const container = document.createElement("div");
+        container.style.display = "inline-flex";
+        container.style.alignItems = "center";
+        container.style.gap = "4px";
+        container.style.fontSize = "1rem";
+        container.style.fontWeight = "700";
+        container.style.color = "var(--text)";
+        container.style.textShadow = "0 1px 3px rgba(0,0,0,0.7)";
+
+        const icon = document.createElement("img");
+        icon.src = `${IMG_DIR}/${iconName}`;
+        icon.alt = "";
+        icon.style.width = "18px";
+        icon.style.height = "18px";
+        icon.style.display = "block";
+
+        const text = document.createTextNode(value);
+
+        container.appendChild(icon);
+        container.appendChild(text);
+        return container;
+    }
+
+    if (elMinerals) {
+        elMinerals.innerHTML = "";
+        elMinerals.appendChild(makeStat("mineral_nobg.png", minerals));
+    }
+    if (elGas) {
+        elGas.innerHTML = "";
+        elGas.appendChild(makeStat("gas_nobg.png", gas));
+    }
+    if (elSupply) {
+        elSupply.innerHTML = "";
+        elSupply.appendChild(makeStat("supply_zerg_nobg.png", `${hand.length}/${supply}`));
+    }
 }
 
 function renderRound() {
