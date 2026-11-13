@@ -102,13 +102,13 @@ function createCardElement(card, imageName, count) {
         cardEl.classList.add("glow-gold");
         for (let i = 0; i < stars; i++) {
             const star = document.createElement("img");
-            star.src = `${IMG_DIR}/gold_star.png`;
+            star.src = `${IMG_DIR}/star.png`;
             star.alt = "★";
             star.style.position = "absolute";
             star.style.bottom = "10px";
             star.style.left = `${10 + i * 24}px`;
-            star.style.width = "20px";
-            star.style.height = "20px";
+            star.style.width = "22px";
+            star.style.height = "22px";
             star.style.zIndex = "2";
             star.style.pointerEvents = "none";
             cardEl.appendChild(star);
@@ -129,8 +129,8 @@ function createCardElement(card, imageName, count) {
             troubleIcon.style.position = "absolute";
             troubleIcon.style.bottom = "10px";
             troubleIcon.style.left = `${10 + i * 24}px`;
-            troubleIcon.style.width = "20px";
-            troubleIcon.style.height = "20px";
+            troubleIcon.style.width = "22px";
+            troubleIcon.style.height = "22px";
             troubleIcon.style.zIndex = "2";
             troubleIcon.style.pointerEvents = "none";
             cardEl.appendChild(troubleIcon);
