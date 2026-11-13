@@ -353,17 +353,20 @@ async function startGame(deckFile) {
     hand = [];
     minerals = 0;
     gas = 0;
-    turn = 0;
+    turn = 1;
     roundNum = 1;
 
     showGame();
-    renderStats();
     renderRound();
     await renderHand();
+    renderStats();
     updateControls();
 
     const handContainer = document.getElementById("hand-container");
     if (handContainer) handContainer.style.display = "flex";
+
+        const elGameOver = document.getElementById("game-over");
+    if (elGameOver) elGameOver.style.display = "none";
 }
 
 function renderStats() {
@@ -372,12 +375,12 @@ function renderStats() {
     const elSupply = document.getElementById("stat-supply");
     if (elMinerals) elMinerals.textContent = `Minerals: ${minerals}`;
     if (elGas) elGas.textContent = `Gas: ${gas}`;
-    if (elSupply) elSupply.textContent = `Supply: ${supply}`;
+    if (elSupply) elSupply.textContent = `Supply: ${hand.length}/${supply}`;
 }
 
 function renderRound() {
     const elRound = document.getElementById("stat-round");
-    if (elRound) elRound.textContent = roundNum === 1 ? "Party Round" : "Shopping round";
+    if (elRound) elRound.textContent = roundNum === 1 ? "Party Round" : "Shopping Round";
 }
 
 async function renderHand() {
@@ -411,6 +414,7 @@ async function drawCard() {
     hand.unshift(card);  // new card on the left
 
     await renderHand();
+    renderStats();
     updateControls();
 }
 
@@ -429,19 +433,22 @@ function endParty() {
     minerals += resources.minerals;
     gas += resources.gas;
 
-    renderStats();
-    roundNum = 2;
-    renderRound();
-
     // Return all cards in hand back to the deck (as card name strings,
     // so drawCard can fetch them by filename)
     playerDeck.push(...hand.map(card => card.image || card.img_name || card.name));
     hand = [];
+    renderStats();
 
     const handContainer = document.getElementById("hand-container");
     if (handContainer) handContainer.style.display = "none";
 
-    updateControls();
+    if (turn >= parties) {
+        gameOver();
+    } else {
+        roundNum = 2;
+        renderRound();
+        updateControls();
+    }
 }
 
 async function startParty() {
@@ -455,25 +462,44 @@ async function startParty() {
 
     const handContainer = document.getElementById("hand-container");
     if (handContainer) handContainer.style.display = "flex";
-
-    if (turn >= parties) {
-        gameOver();
-    }
 }
 
 function gameOver() {
     const el = document.getElementById("game-over");
     const elMsg = document.getElementById("game-over-message");
     if (el) el.style.display = "block";
-    if (elMsg) elMsg.textContent = `You played ${turn} party${turn !== 1 ? "s" : ""}. Final: ${minerals} minerals, ${gas} gas.`;
-    updateControls();
+    if (elMsg) elMsg.textContent = `You played ${turn} parties. Final: ${minerals} minerals, ${gas} gas.`;
+
+    // Hide round indicator during game over
+    const elRound = document.getElementById("stat-round");
+    if (elRound) elRound.style.display = "none";
+
+    // Hide hand during game over
+    const handContainer = document.getElementById("hand-container");
+    if (handContainer) handContainer.style.display = "none";
+    
+    // Show GameOver
+    const elGameOver = document.getElementById("game-over");
+    if (elGameOver) elGameOver.style.display = "block";
+
+    // Hide all controls during GameOver
+    hideControls();
+}
+
+function hideControls() {
+    const btnDraw = document.getElementById("btn-draw");
+    const btnEndParty = document.getElementById("btn-end-party");
+    const btnStartParty = document.getElementById("btn-start-party");
+
+    if (btnDraw) btnDraw.style.display = "none";
+    if (btnEndParty) btnEndParty.style.display = "none";
+    if (btnStartParty) btnStartParty.style.display = "none";
 }
 
 function updateControls() {
     const btnDraw = document.getElementById("btn-draw");
     const btnEndParty = document.getElementById("btn-end-party");
     const btnStartParty = document.getElementById("btn-start-party");
-    const elGameOver = document.getElementById("game-over");
 
     if (roundNum === 1) {
         if (btnDraw) btnDraw.style.display = "inline-block";
@@ -486,8 +512,6 @@ function updateControls() {
         if (btnEndParty) btnEndParty.style.display = "none";
         if (btnStartParty) btnStartParty.style.display = "inline-block";
     }
-
-    if (elGameOver) elGameOver.style.display = turn >= parties ? "block" : "none";
 }
 
 async function loadAllDecks() {
