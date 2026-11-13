@@ -300,8 +300,9 @@ async function loadSoloDecks() {
         })
     );
 
-    deckNames.forEach((name) => {
+    deckNames.forEach((name, i) => {
         if (!name) return;
+        const deckFile = DECK_FILES[i];
         const btn = document.createElement("button");
         btn.textContent = name;
         btn.className = "menu-options-button";
@@ -315,9 +316,178 @@ async function loadSoloDecks() {
         btn.style.background = "var(--card-bg)";
         btn.style.color = "var(--text)";
         btn.style.marginBottom = "8px";
-        btn.onclick = () => showGame();
+        btn.onclick = () => startGame(deckFile);
         container.appendChild(btn);
     });
+}
+
+// Game state
+let currentDeckFile = null;
+let playerDeck = [];
+let hand = [];
+let minerals = 0;
+let gas = 0;
+let supply = 0;
+let turn = 0;
+let parties = Infinity;
+let roundNum = 1;
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+async function startGame(deckFile) {
+    currentDeckFile = deckFile;
+    const resp = await fetch(`${DECKS_DIR}/${deckFile}.json`);
+    if (!resp.ok) throw new Error(`Deck fetch failed: ${resp.status}`);
+    const deck = await resp.json();
+
+    playerDeck = [...(deck.deck || [])];
+    shuffle(playerDeck);
+    supply = deck.supply != null ? deck.supply : 0;
+    parties = deck.parties != null ? deck.parties : Infinity;
+    hand = [];
+    minerals = 0;
+    gas = 0;
+    turn = 0;
+    roundNum = 1;
+
+    showGame();
+    renderStats();
+    renderRound();
+    await renderHand();
+    updateControls();
+
+    const handContainer = document.getElementById("hand-container");
+    if (handContainer) handContainer.style.display = "flex";
+}
+
+function renderStats() {
+    const elMinerals = document.getElementById("stat-minerals");
+    const elGas = document.getElementById("stat-gas");
+    const elSupply = document.getElementById("stat-supply");
+    if (elMinerals) elMinerals.textContent = `Minerals: ${minerals}`;
+    if (elGas) elGas.textContent = `Gas: ${gas}`;
+    if (elSupply) elSupply.textContent = `Supply: ${supply}`;
+}
+
+function renderRound() {
+    const elRound = document.getElementById("stat-round");
+    if (elRound) elRound.textContent = roundNum === 1 ? "Party Round" : "Shopping round";
+}
+
+async function renderHand() {
+    const container = document.getElementById("hand-container");
+    if (!container) return;
+    container.innerHTML = "";
+
+    // Render newest cards first (leftmost), pushing older cards to the right
+    for (let i = hand.length - 1; i >= 0; i--) {
+        const card = hand[i];
+        const imageName = resolveImage(card);
+        const cardEl = await createCardElement(card, imageName, 1);
+        cardEl.style.width = "140px";
+        cardEl.style.aspectRatio = "3 / 4.5";
+        cardEl.style.flex = "0 0 auto";
+        container.appendChild(cardEl);
+    }
+}
+
+async function drawCard() {
+    if (playerDeck.length === 0) return;
+    if (hand.length >= supply) return;
+
+    const cardName = playerDeck.shift();
+    const cardResp = await fetch(`${CARDS_DIR}/${cardName}.json`);
+    if (!cardResp.ok) {
+        console.warn(`Skipping card "${cardName}": ${cardResp.status}`);
+        return;
+    }
+    const card = await cardResp.json();
+    hand.unshift(card);  // new card on the left
+
+    await renderHand();
+    updateControls();
+}
+
+function sumHandResources() {
+    let totalMinerals = 0;
+    let totalGas = 0;
+    for (const card of hand) {
+        if ("minerals" in card) totalMinerals += card.minerals;
+        if ("gas" in card) totalGas += card.gas;
+    }
+    return { minerals: totalMinerals, gas: totalGas };
+}
+
+function endParty() {
+    const resources = sumHandResources();
+    minerals += resources.minerals;
+    gas += resources.gas;
+
+    renderStats();
+    roundNum = 2;
+    renderRound();
+
+    // Return all cards in hand back to the deck (as card name strings,
+    // so drawCard can fetch them by filename)
+    playerDeck.push(...hand.map(card => card.image || card.img_name || card.name));
+    hand = [];
+
+    const handContainer = document.getElementById("hand-container");
+    if (handContainer) handContainer.style.display = "none";
+
+    updateControls();
+}
+
+async function startParty() {
+    hand = [];
+    shuffle(playerDeck);
+    await renderHand();
+    roundNum = 1;
+    turn++;
+    renderRound();
+    updateControls();
+
+    const handContainer = document.getElementById("hand-container");
+    if (handContainer) handContainer.style.display = "flex";
+
+    if (turn >= parties) {
+        gameOver();
+    }
+}
+
+function gameOver() {
+    const el = document.getElementById("game-over");
+    const elMsg = document.getElementById("game-over-message");
+    if (el) el.style.display = "block";
+    if (elMsg) elMsg.textContent = `You played ${turn} party${turn !== 1 ? "s" : ""}. Final: ${minerals} minerals, ${gas} gas.`;
+    updateControls();
+}
+
+function updateControls() {
+    const btnDraw = document.getElementById("btn-draw");
+    const btnEndParty = document.getElementById("btn-end-party");
+    const btnStartParty = document.getElementById("btn-start-party");
+    const elGameOver = document.getElementById("game-over");
+
+    if (roundNum === 1) {
+        if (btnDraw) btnDraw.style.display = "inline-block";
+        if (btnEndParty) btnEndParty.style.display = "inline-block";
+        if (btnStartParty) btnStartParty.style.display = "none";
+        if (btnDraw) btnDraw.disabled = hand.length >= supply || playerDeck.length === 0;
+        if (btnEndParty) btnEndParty.disabled = false;
+    } else {
+        if (btnDraw) btnDraw.style.display = "none";
+        if (btnEndParty) btnEndParty.style.display = "none";
+        if (btnStartParty) btnStartParty.style.display = "inline-block";
+    }
+
+    if (elGameOver) elGameOver.style.display = turn >= parties ? "block" : "none";
 }
 
 async function loadAllDecks() {
@@ -377,5 +547,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnReturnGame = document.getElementById("btn-return-game");
     if (btnReturnGame) {
         btnReturnGame.addEventListener("click", showMenu);
+    }
+
+    const btnGameOverMenu = document.getElementById("btn-game-over-menu");
+    if (btnGameOverMenu) {
+        btnGameOverMenu.addEventListener("click", showMenu);
+    }
+
+    const btnDraw = document.getElementById("btn-draw");
+    if (btnDraw) {
+        btnDraw.addEventListener("click", drawCard);
+    }
+
+    const btnEndParty = document.getElementById("btn-end-party");
+    if (btnEndParty) {
+        btnEndParty.addEventListener("click", endParty);
+    }
+
+    const btnStartParty = document.getElementById("btn-start-party");
+    if (btnStartParty) {
+        btnStartParty.addEventListener("click", startParty);
     }
 });

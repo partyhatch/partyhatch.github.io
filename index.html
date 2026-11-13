@@ -201,6 +201,89 @@
             color: var(--muted);
             padding: 40px 0;
         }
+
+        /* Game screen */
+        .game-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .game-stats span {
+            background: rgba(0,0,0,0.45);
+            padding: 4px 10px;
+            border-radius: 10px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        }
+        .game-round {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+        .hand-container {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px;
+            min-height: 320px;
+        }
+        .hand-card {
+            flex: 0 0 auto;
+            width: 140px;
+            aspect-ratio: 3 / 4.5;
+        }
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .game-btn {
+            padding: 10px 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text);
+        }
+        .game-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.6);
+        }
+        .game-btn-primary {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #fff;
+        }
+        .game-btn-primary:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+        .game-over {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text);
+        }
+        .game-over h2 {
+            margin: 0 0 12px;
+            font-size: 1.5rem;
+        }
+        .game-over p {
+            margin: 0 0 20px;
+            font-size: 1rem;
+            color: var(--muted);
+        }
     </style>
 </head>
 <body>
@@ -234,7 +317,25 @@
             <h2 id="game-title">Game</h2>
             <button id="btn-return-game" class="return-btn">Return to Menu</button>
         </div>
-        <div id="game-container"></div>
+        <div id="game-container">
+            <div class="game-stats">
+                <span id="stat-minerals">Minerals: 0</span>
+                <span id="stat-gas">Gas: 0</span>
+                <span id="stat-supply">Supply: 0</span>
+            </div>
+            <div class="game-round">Round: <span id="stat-round">1</span></div>
+            <div id="hand-container" class="hand-container"></div>
+            <div class="game-controls">
+                <button id="btn-draw" class="game-btn">Draw Card</button>
+                <button id="btn-end-party" class="game-btn game-btn-primary">End Party</button>
+                <button id="btn-start-party" class="game-btn game-btn-primary" style="display:none">Start Party</button>
+            </div>
+            <div id="game-over" class="game-over" style="display:none">
+                <h2>Game Over</h2>
+                <p id="game-over-message"></p>
+                <button id="btn-game-over-menu" class="return-btn">Return to Menu</button>
+            </div>
+        </div>
     </div>
 
     <script src="partyhatch.js"></script>
