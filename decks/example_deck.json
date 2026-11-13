@@ -6,5 +6,6 @@
             "count": 1
         }
     ],
-    "deck": [ "example", "example" ]
+    "deck": [ "example", "example" ],
+    "supply": 1
 }

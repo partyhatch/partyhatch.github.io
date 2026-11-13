@@ -115,6 +115,28 @@ function createCardElement(card, imageName, count) {
         }
     }
 
+    // Trouble icons: shown in the bottom-left where stars appear.
+    // Positive trouble shows fungal.png icons equal to the value; negative
+    // trouble shows heal.png icons equal to the absolute value.
+    const trouble = card.trouble || 0;
+    if (trouble !== 0) {
+        const iconSrc = trouble > 0 ? `${IMG_DIR}/fungal.png` : `${IMG_DIR}/heal.png`;
+        const count = Math.abs(trouble);
+        for (let i = 0; i < count; i++) {
+            const troubleIcon = document.createElement("img");
+            troubleIcon.src = iconSrc;
+            troubleIcon.alt = "";
+            troubleIcon.style.position = "absolute";
+            troubleIcon.style.bottom = "10px";
+            troubleIcon.style.left = `${10 + i * 24}px`;
+            troubleIcon.style.width = "20px";
+            troubleIcon.style.height = "20px";
+            troubleIcon.style.zIndex = "2";
+            troubleIcon.style.pointerEvents = "none";
+            cardEl.appendChild(troubleIcon);
+        }
+    }
+
     // Cost badge: shown in the top-right corner when the card JSON defines a
     // "cost", with a mineral icon to its left.
     if ("cost" in card) {

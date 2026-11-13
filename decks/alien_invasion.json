@@ -66,5 +66,6 @@
             "count": -1
         }
     ],
-    "deck": [ "probe" ]
+    "deck": [ "scv","scv","scv","scv","probe","probe","drone","drone","drone","drone" ],
+    "supply": 6
 }

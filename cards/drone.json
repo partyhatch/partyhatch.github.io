@@ -1,7 +1,7 @@
 {
     "name": "Drone",
     "image": "drone",
-    "minerals": 0,
+    "minerals": 2,
     "gas": 0,
     "trouble": 1
 }

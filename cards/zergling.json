@@ -4,5 +4,5 @@
     "cost": 3,
     "minerals": 4,
     "gas": 0,
-    "trouble": true
+    "trouble": 1
 }
