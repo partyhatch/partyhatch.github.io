@@ -388,12 +388,13 @@ async function renderHand() {
     if (!container) return;
     container.innerHTML = "";
 
-    // Render newest cards first (leftmost), pushing older cards to the right
-    for (let i = hand.length - 1; i >= 0; i--) {
+    // Render cards left-to-right: index 0 is the newest card (leftmost),
+    // pushing older cards to the right.
+    for (let i = 0; i < hand.length; i++) {
         const card = hand[i];
         const imageName = resolveImage(card);
         const cardEl = await createCardElement(card, imageName, 1);
-        cardEl.style.width = "140px";
+        cardEl.style.width = "220px";
         cardEl.style.aspectRatio = "3 / 4.5";
         cardEl.style.flex = "0 0 auto";
         container.appendChild(cardEl);
