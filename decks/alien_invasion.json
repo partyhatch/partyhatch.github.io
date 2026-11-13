@@ -67,7 +67,8 @@
         }
     ],
     "deck": [ "scv","scv","scv","scv","probe","probe","drone","drone","drone","drone" ],
-    "supply": 6,
+    "supply": 5,
+    "parties": 25,
     "win": {
         "solo": 4,
         "versus": 3

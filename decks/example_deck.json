@@ -7,5 +7,9 @@
         }
     ],
     "deck": [ "example", "example" ],
-    "supply": 1
+    "supply": 1,
+    "win": {
+        "solo": 2,
+        "versus": 1
+    }
 }

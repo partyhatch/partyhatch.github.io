@@ -240,15 +240,84 @@ async function loadDeck(deckFile) {
 function showMenu() {
     const menu = document.getElementById("menu-screen");
     const decks = document.getElementById("decks-screen");
+    const solo = document.getElementById("solo-decks-screen");
+    const game = document.getElementById("game-screen");
     if (menu) menu.classList.add("visible");
     if (decks) decks.classList.remove("visible");
+    if (solo) solo.classList.remove("visible");
+    if (game) game.classList.remove("visible");
 }
 
 function showDecks() {
     const menu = document.getElementById("menu-screen");
     const decks = document.getElementById("decks-screen");
+    const solo = document.getElementById("solo-decks-screen");
+    const game = document.getElementById("game-screen");
     if (menu) menu.classList.remove("visible");
     if (decks) decks.classList.add("visible");
+    if (solo) solo.classList.remove("visible");
+    if (game) game.classList.remove("visible");
+}
+
+function showSoloDecks() {
+    const menu = document.getElementById("menu-screen");
+    const decks = document.getElementById("decks-screen");
+    const solo = document.getElementById("solo-decks-screen");
+    const game = document.getElementById("game-screen");
+    if (menu) menu.classList.remove("visible");
+    if (decks) decks.classList.remove("visible");
+    if (solo) solo.classList.add("visible");
+    if (game) game.classList.remove("visible");
+}
+
+function showGame() {
+    const menu = document.getElementById("menu-screen");
+    const decks = document.getElementById("decks-screen");
+    const solo = document.getElementById("solo-decks-screen");
+    const game = document.getElementById("game-screen");
+    if (menu) menu.classList.remove("visible");
+    if (decks) decks.classList.remove("visible");
+    if (solo) solo.classList.remove("visible");
+    if (game) game.classList.add("visible");
+}
+
+async function loadSoloDecks() {
+    const container = document.getElementById("solo-decks-container");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const deckNames = await Promise.all(
+        DECK_FILES.map(async (deckFile) => {
+            try {
+                const resp = await fetch(`${DECKS_DIR}/${deckFile}.json`);
+                if (!resp.ok) return null;
+                const deck = await resp.json();
+                return deck.name || deckFile;
+            } catch (err) {
+                console.error(`Failed to load deck "${deckFile}":`, err);
+                return null;
+            }
+        })
+    );
+
+    deckNames.forEach((name) => {
+        if (!name) return;
+        const btn = document.createElement("button");
+        btn.textContent = name;
+        btn.className = "menu-options-button";
+        btn.style.width = "100%";
+        btn.style.padding = "14px 16px";
+        btn.style.fontSize = "1rem";
+        btn.style.fontWeight = "600";
+        btn.style.cursor = "pointer";
+        btn.style.border = "1px solid var(--border)";
+        btn.style.borderRadius = "8px";
+        btn.style.background = "var(--card-bg)";
+        btn.style.color = "var(--text)";
+        btn.style.marginBottom = "8px";
+        btn.onclick = () => showGame();
+        container.appendChild(btn);
+    });
 }
 
 async function loadAllDecks() {
@@ -279,6 +348,14 @@ async function loadAllDecks() {
 document.addEventListener("DOMContentLoaded", () => {
     showMenu();
 
+    const btnSolo = document.getElementById("btn-solo");
+    if (btnSolo) {
+        btnSolo.addEventListener("click", () => {
+            showSoloDecks();
+            loadSoloDecks();
+        });
+    }
+
     const btnViewDecks = document.getElementById("btn-view-decks");
     if (btnViewDecks) {
         btnViewDecks.addEventListener("click", () => {
@@ -290,5 +367,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnReturnMenu = document.getElementById("btn-return-menu");
     if (btnReturnMenu) {
         btnReturnMenu.addEventListener("click", showMenu);
+    }
+
+    const btnReturnSoloMenu = document.getElementById("btn-return-solo-menu");
+    if (btnReturnSoloMenu) {
+        btnReturnSoloMenu.addEventListener("click", showMenu);
+    }
+
+    const btnReturnGame = document.getElementById("btn-return-game");
+    if (btnReturnGame) {
+        btnReturnGame.addEventListener("click", showMenu);
     }
 });

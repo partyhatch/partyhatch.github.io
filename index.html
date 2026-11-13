@@ -207,7 +207,7 @@
     <div id="menu-screen" class="screen visible">
         <h1>Party Hatch</h1>
         <div class="menu-options">
-            <button id="btn-solo" disabled>Play Solo</button>
+            <button id="btn-solo">Play Solo</button>
             <button id="btn-versus" disabled>Play Versus</button>
             <button id="btn-view-decks">View Decks</button>
         </div>
@@ -219,6 +219,22 @@
             <button id="btn-return-menu" class="return-btn">Return to Menu</button>
         </div>
         <div id="decks-container"></div>
+    </div>
+
+    <div id="solo-decks-screen" class="screen">
+        <div class="decks-header">
+            <h2 id="solo-decks-title">Choose a Deck</h2>
+            <button id="btn-return-solo-menu" class="return-btn">Return to Menu</button>
+        </div>
+        <div id="solo-decks-container"></div>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div class="decks-header">
+            <h2 id="game-title">Game</h2>
+            <button id="btn-return-game" class="return-btn">Return to Menu</button>
+        </div>
+        <div id="game-container"></div>
     </div>
 
     <script src="partyhatch.js"></script>
