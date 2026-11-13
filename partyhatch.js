@@ -32,7 +32,7 @@ function resolveImage(card) {
     return card.image || card.img_name || card.name;
 }
 
-async function createCardElement(card, imageName, count) {
+async function createCardElement(card, imageName, count, showCount = true, showCost = true) {
     const cardEl = document.createElement("div");
     cardEl.className = "card";
     if (card.trouble > 0) {
@@ -42,9 +42,12 @@ async function createCardElement(card, imageName, count) {
     }
     cardEl.style.backgroundImage = `url("${IMG_DIR}/${imageName}.png")`;
 
-    const countEl = document.createElement("span");
-    countEl.className = "card-count";
-    countEl.textContent = count < 0 ? "∞" : `×${count}`;
+    if (showCount) {
+        const countEl = document.createElement("span");
+        countEl.className = "card-count";
+        countEl.textContent = count < 0 ? "∞" : `×${count}`;
+        cardEl.appendChild(countEl);
+    }
 
     const body = document.createElement("div");
     body.className = "card-body";
@@ -109,7 +112,6 @@ async function createCardElement(card, imageName, count) {
     }
     body.appendChild(stats);
     cardEl.appendChild(body);
-    cardEl.appendChild(countEl);
 
     const stars = card.stars || 0;
     if (stars > 0) {
@@ -156,7 +158,7 @@ async function createCardElement(card, imageName, count) {
 
     // Cost badge: shown in the top-right corner when the card JSON defines a
     // "cost", with a mineral icon to its left.
-    if ("cost" in card) {
+    if ("cost" in card && showCost) {
         const costBadge = document.createElement("div");
         costBadge.style.position = "absolute";
         costBadge.style.top = "10px";
@@ -427,7 +429,7 @@ async function renderHand() {
     for (let i = 0; i < hand.length; i++) {
         const card = hand[i];
         const imageName = resolveImage(card);
-        const cardEl = await createCardElement(card, imageName, 1);
+        const cardEl = await createCardElement(card, imageName, 1, false, false);
         cardEl.style.width = "220px";
         cardEl.style.aspectRatio = "3 / 4.5";
         cardEl.style.flex = "0 0 auto";
