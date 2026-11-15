@@ -379,7 +379,7 @@ function renderStats() {
     const elGas = document.getElementById("stat-gas");
     const elSupply = document.getElementById("stat-supply");
 
-    function makeStat(iconName, value) {
+    function makeStat(iconName, value, tooltip) {
         const container = document.createElement("div");
         container.style.display = "inline-flex";
         container.style.alignItems = "center";
@@ -395,6 +395,7 @@ function renderStats() {
         icon.style.width = "18px";
         icon.style.height = "18px";
         icon.style.display = "block";
+        icon.title = tooltip
 
         const text = document.createTextNode(value);
 
@@ -405,15 +406,15 @@ function renderStats() {
 
     if (elMinerals) {
         elMinerals.innerHTML = "";
-        elMinerals.appendChild(makeStat("mineral_nobg.png", minerals));
+        elMinerals.appendChild(makeStat("mineral_nobg.png", minerals, "Minerals"));
     }
     if (elGas) {
         elGas.innerHTML = "";
-        elGas.appendChild(makeStat("gas_nobg.png", gas));
+        elGas.appendChild(makeStat("gas_nobg.png", gas, "Gas"));
     }
     if (elSupply) {
         elSupply.innerHTML = "";
-        elSupply.appendChild(makeStat("supply_zerg_nobg.png", `${hand.length}/${supply}`));
+        elSupply.appendChild(makeStat("supply_zerg_nobg.png", `${hand.length}/${supply}`, "Supply"));
     }
 }
 
@@ -458,13 +459,31 @@ async function renderHand() {
     container.innerHTML = "";
 
     // Invite Unit fake card (draw button) - always on the left
+    const deckHasCards = playerDeck.length > 0 
+    const handHasSpace = hand.length < supply
+    const troubleIsSafe = totalTrouble < 3
+    const canDraw = troubleIsSafe && handHasSpace && deckHasCards
+    var inviteLoc = await getLoc("invite"); 
+    if ( !troubleIsSafe )
+    {
+        inviteLoc = await getLoc("infested")
+    }
+    else if ( !handHasSpace )
+    {
+        inviteLoc = await getLoc("supply")
+    }
+    else if ( !deckHasCards )
+    {
+        inviteLoc = await getLoc("empty_deck")
+    }
     const inviteCard = document.createElement("div");
     inviteCard.className = "card invite-card";
     inviteCard.style.width = "220px";
     inviteCard.style.aspectRatio = "3 / 4.5";
     inviteCard.style.backgroundImage = `url("${IMG_DIR}/depot_raised.png")`;
-    inviteCard.title = "Let a unit into the party...";
-    const canDraw = totalTrouble < 3 && playerDeck.length > 0 && hand.length < supply 
+    inviteCard.style.backgroundSize = "contain";
+    inviteCard.style.backgroundRepeat = "no-repeat";
+    inviteCard.title = inviteLoc;
     if ( canDraw )
     {
         inviteCard.onmouseenter = () => {
