@@ -386,6 +386,7 @@ async function startGame(deckFile) {
 
     const shopContainer = document.getElementById("shop-container");
     if (shopContainer) shopContainer.style.display = "none";
+    if (shopContainer) shopContainer.innerHTML = "";
 }
 
 function renderStats() {
@@ -587,7 +588,6 @@ async function buyCard(cardName) {
 async function renderShop() {
     const container = document.getElementById("shop-container");
     if (!container) return;
-    container.innerHTML = "";
 
     for (const entry of shopCards) {
         const cardName = entry.card;
@@ -598,18 +598,24 @@ async function renderShop() {
         const count = shopInventory[cardName] || 0;
         const canBuy = count > 0 && minerals >= card.cost;
 
-        const cardEl = await createCardElement(card, card.image, count, true, true);
-        cardEl.style.width = "220px";
-        cardEl.style.aspectRatio = "3 / 4.5";
+        // Find existing element or create new one
+        let cardEl = container.querySelector(`[data-card="${cardName}"]`);
+        if (!cardEl) {
+            cardEl = await createCardElement(card, card.image, count, true, true);
+            cardEl.style.width = "220px";
+            cardEl.style.aspectRatio = "3 / 4.5";
+            cardEl.dataset.card = cardName;
+            container.appendChild(cardEl);
+        }
 
         if (!canBuy) {
             cardEl.style.filter = "grayscale(1)";
             cardEl.style.opacity = "0.6";
         } else {
+            cardEl.style.filter = "";
+            cardEl.style.opacity = "1";
             cardEl.onclick = () => buyCard(cardName);
         }
-
-        container.appendChild(cardEl);
     }
 }
 
