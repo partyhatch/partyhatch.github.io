@@ -717,6 +717,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const btnInfestParty = document.getElementById("btn-infest-party");
     if (btnInfestParty) {
+        getLoc("infested").then(infestLoc => {
+            btnInfestParty.title = infestLoc;
+        });
         btnInfestParty.addEventListener("click", infestParty);
     }
 });
