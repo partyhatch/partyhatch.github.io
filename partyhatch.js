@@ -427,7 +427,9 @@ function renderTrouble() {
     container.style.fontSize = "1rem";
     container.style.fontWeight = "700";
     container.style.color = "var(--text)";
-    container.style.textShadow = "0 1px 3px rgba(0,0,0,0.7)";
+
+    const redValue = Math.min(totalTrouble < 0 ? 0 : totalTrouble * 85, 255);
+    container.style.background = `rgba(${redValue},0,0,0.7)`;
 
     const iconName = "fungal.png";
 
