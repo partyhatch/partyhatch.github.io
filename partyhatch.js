@@ -457,6 +457,26 @@ async function renderHand() {
     if (!container) return;
     container.innerHTML = "";
 
+    // Invite Unit fake card (draw button) - always on the left
+    const inviteCard = document.createElement("div");
+    inviteCard.className = "card invite-card";
+    inviteCard.style.width = "220px";
+    inviteCard.style.aspectRatio = "3 / 4.5";
+    inviteCard.style.backgroundImage = `url("${IMG_DIR}/depot_raised.png")`;
+    inviteCard.title = "Let a unit into the party...";
+    const canDraw = totalTrouble < 3 && playerDeck.length > 0 && hand.length < supply 
+    if ( canDraw )
+    {
+        inviteCard.onmouseenter = () => {
+            inviteCard.style.backgroundImage = `url("${IMG_DIR}/depot_lowered.png")`;
+        };
+    }
+    inviteCard.onmouseleave = () => {
+        inviteCard.style.backgroundImage = `url("${IMG_DIR}/depot_raised.png")`;
+    };
+    inviteCard.onclick = ( canDraw ) ? drawCard : null;
+    container.appendChild(inviteCard);
+
     // Render cards left-to-right: index 0 is the newest card (leftmost),
     // pushing older cards to the right.
     for (let i = 0; i < hand.length; i++) {
@@ -598,17 +618,14 @@ function gameOver() {
 }
 
 function hideControls() {
-    const btnDraw = document.getElementById("btn-draw");
     const btnEndParty = document.getElementById("btn-end-party");
     const btnStartParty = document.getElementById("btn-start-party");
 
-    if (btnDraw) btnDraw.style.display = "none";
     if (btnEndParty) btnEndParty.style.display = "none";
     if (btnStartParty) btnStartParty.style.display = "none";
 }
 
 function updateControls() {
-    const btnDraw = document.getElementById("btn-draw");
     const btnEndParty = document.getElementById("btn-end-party");
     const btnStartParty = document.getElementById("btn-start-party");
     const btnInfestParty = document.getElementById("btn-infest-party");
@@ -616,20 +633,16 @@ function updateControls() {
     if (roundNum === 1) {
         if (totalTrouble >= 3) {
             // Infested: hide draw/end party, show infest button
-            if (btnDraw) btnDraw.style.display = "none";
             if (btnEndParty) btnEndParty.style.display = "none";
             if (btnStartParty) btnStartParty.style.display = "none";
             if (btnInfestParty) btnInfestParty.style.display = "inline-block";
         } else {
-            if (btnDraw) btnDraw.style.display = "inline-block";
             if (btnEndParty) btnEndParty.style.display = "inline-block";
             if (btnStartParty) btnStartParty.style.display = "none";
             if (btnInfestParty) btnInfestParty.style.display = "none";
-            if (btnDraw) btnDraw.disabled = hand.length >= supply || playerDeck.length === 0;
             if (btnEndParty) btnEndParty.disabled = false;
         }
     } else {
-        if (btnDraw) btnDraw.style.display = "none";
         if (btnEndParty) btnEndParty.style.display = "none";
         if (btnStartParty) btnStartParty.style.display = "inline-block";
         if (btnInfestParty) btnInfestParty.style.display = "none";
