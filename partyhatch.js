@@ -333,6 +333,7 @@ let supply = 0;
 let turn = 0;
 let parties = Infinity;
 let roundNum = 1;
+let totalTrouble = 0;
 
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -355,6 +356,7 @@ async function startGame(deckFile) {
     hand = [];
     minerals = 0;
     gas = 0;
+    totalTrouble = 0;
     turn = 1;
     roundNum = 1;
 
@@ -362,6 +364,7 @@ async function startGame(deckFile) {
     renderRound();
     await renderHand();
     renderStats();
+    renderTrouble();
     updateControls();
 
     const handContainer = document.getElementById("hand-container");
@@ -414,6 +417,34 @@ function renderStats() {
     }
 }
 
+function renderTrouble() {
+    const container = document.getElementById("stat-trouble");
+    if (!container) return;
+    container.innerHTML = "";
+    container.style.display = "inline-flex";
+    container.style.alignItems = "center";
+    container.style.gap = "4px";
+    container.style.fontSize = "1rem";
+    container.style.fontWeight = "700";
+    container.style.color = "var(--text)";
+    container.style.textShadow = "0 1px 3px rgba(0,0,0,0.7)";
+
+    const iconName = "fungal.png";
+
+    const text = document.createTextNode("Infestation level: ");
+    container.appendChild(text);
+
+    for (let i = 0; i < totalTrouble; i++) {
+        const icon = document.createElement("img");
+        icon.src = `${IMG_DIR}/${iconName}`;
+        icon.alt = "";
+        icon.style.width = "18px";
+        icon.style.height = "18px";
+        icon.style.display = "block";
+        container.appendChild(icon);
+    }
+}
+
 function renderRound() {
     const elRound = document.getElementById("stat-round");
     if (elRound) elRound.textContent = roundNum === 1 ? "Party Round" : "Shopping Round";
@@ -450,8 +481,12 @@ async function drawCard() {
     const card = await cardResp.json();
     hand.unshift(card);  // new card on the left
 
+    const cardTrouble = card.trouble || 0;
+    totalTrouble += cardTrouble;
+
     await renderHand();
     renderStats();
+    renderTrouble();
     updateControls();
 }
 
@@ -465,6 +500,16 @@ function sumHandResources() {
     return { minerals: totalMinerals, gas: totalGas };
 }
 
+function sumHandTrouble() {
+    let total = 0;
+    for (const card of hand) {
+        if (card.trouble > 0) {
+            total += card.trouble;
+        }
+    }
+    return total;
+}
+
 function endParty() {
     const resources = sumHandResources();
     minerals += resources.minerals;
@@ -474,7 +519,32 @@ function endParty() {
     // so drawCard can fetch them by filename)
     playerDeck.push(...hand.map(card => card.image || card.img_name || card.name));
     hand = [];
+    totalTrouble = 0;
+
     renderStats();
+    renderTrouble();
+
+    const handContainer = document.getElementById("hand-container");
+    if (handContainer) handContainer.style.display = "none";
+
+    if (turn >= parties) {
+        gameOver();
+    } else {
+        roundNum = 2;
+        renderRound();
+        updateControls();
+    }
+}
+
+function infestParty() {
+    // Return all cards in hand back to the deck (as card name strings,
+    // so drawCard can fetch them by filename)
+    playerDeck.push(...hand.map(card => card.image || card.img_name || card.name));
+    hand = [];
+    totalTrouble = 0;
+
+    renderStats();
+    renderTrouble();
 
     const handContainer = document.getElementById("hand-container");
     if (handContainer) handContainer.style.display = "none";
@@ -494,7 +564,9 @@ async function startParty() {
     await renderHand();
     roundNum = 1;
     turn++;
+    totalTrouble = 0;
     renderRound();
+    renderTrouble();
     updateControls();
 
     const handContainer = document.getElementById("hand-container");
@@ -537,17 +609,28 @@ function updateControls() {
     const btnDraw = document.getElementById("btn-draw");
     const btnEndParty = document.getElementById("btn-end-party");
     const btnStartParty = document.getElementById("btn-start-party");
+    const btnInfestParty = document.getElementById("btn-infest-party");
 
     if (roundNum === 1) {
-        if (btnDraw) btnDraw.style.display = "inline-block";
-        if (btnEndParty) btnEndParty.style.display = "inline-block";
-        if (btnStartParty) btnStartParty.style.display = "none";
-        if (btnDraw) btnDraw.disabled = hand.length >= supply || playerDeck.length === 0;
-        if (btnEndParty) btnEndParty.disabled = false;
+        if (totalTrouble >= 3) {
+            // Infested: hide draw/end party, show infest button
+            if (btnDraw) btnDraw.style.display = "none";
+            if (btnEndParty) btnEndParty.style.display = "none";
+            if (btnStartParty) btnStartParty.style.display = "none";
+            if (btnInfestParty) btnInfestParty.style.display = "inline-block";
+        } else {
+            if (btnDraw) btnDraw.style.display = "inline-block";
+            if (btnEndParty) btnEndParty.style.display = "inline-block";
+            if (btnStartParty) btnStartParty.style.display = "none";
+            if (btnInfestParty) btnInfestParty.style.display = "none";
+            if (btnDraw) btnDraw.disabled = hand.length >= supply || playerDeck.length === 0;
+            if (btnEndParty) btnEndParty.disabled = false;
+        }
     } else {
         if (btnDraw) btnDraw.style.display = "none";
         if (btnEndParty) btnEndParty.style.display = "none";
         if (btnStartParty) btnStartParty.style.display = "inline-block";
+        if (btnInfestParty) btnInfestParty.style.display = "none";
     }
 }
 
@@ -628,5 +711,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnStartParty = document.getElementById("btn-start-party");
     if (btnStartParty) {
         btnStartParty.addEventListener("click", startParty);
+    }
+
+    const btnInfestParty = document.getElementById("btn-infest-party");
+    if (btnInfestParty) {
+        btnInfestParty.addEventListener("click", infestParty);
     }
 });
