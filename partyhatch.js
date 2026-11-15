@@ -450,7 +450,8 @@ function renderTrouble() {
 
 function renderRound() {
     const elRound = document.getElementById("stat-round");
-    if (elRound) elRound.textContent = roundNum === 1 ? "Party Round" : "Shopping Round";
+    const turnString = turn + "/" + ( parties === Infinity ? "∞" : parties )
+    if (elRound) elRound.textContent = roundNum === 1 ? "Party Round " + turnString : "Shopping Round " + turnString;
 }
 
 async function renderHand() {
