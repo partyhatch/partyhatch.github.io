@@ -557,28 +557,14 @@ function endParty() {
     minerals += resources.minerals;
     gas += resources.gas;
 
-    // Return all cards in hand back to the deck (as card name strings,
-    // so drawCard can fetch them by filename)
-    playerDeck.push(...hand.map(card => card.image || card.img_name || card.name));
-    hand = [];
-    totalTrouble = 0;
-
-    renderStats();
-    renderTrouble();
-
-    const handContainer = document.getElementById("hand-container");
-    if (handContainer) handContainer.style.display = "none";
-
-    if (turn >= parties) {
-        gameOver();
-    } else {
-        roundNum = 2;
-        renderRound();
-        updateControls();
-    }
+    endPartyShared()
 }
 
 function infestParty() {
+    endPartyShared()
+}
+
+function endPartyShared() {
     // Return all cards in hand back to the deck (as card name strings,
     // so drawCard can fetch them by filename)
     playerDeck.push(...hand.map(card => card.image || card.img_name || card.name));
