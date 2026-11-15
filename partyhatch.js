@@ -334,6 +334,8 @@ let turn = 0;
 let parties = Infinity;
 let roundNum = 1;
 let totalTrouble = 0;
+let shopInventory = {};
+let shopCards = [];
 
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -360,6 +362,12 @@ async function startGame(deckFile) {
     turn = 1;
     roundNum = 1;
 
+    shopInventory = {};
+    shopCards = deck.cards || [];
+    deck.cards.forEach(entry => {
+        shopInventory[entry.card] = entry.count != null ? entry.count : 1;
+    });
+
     showGame();
     renderRound();
     await renderHand();
@@ -370,8 +378,14 @@ async function startGame(deckFile) {
     const handContainer = document.getElementById("hand-container");
     if (handContainer) handContainer.style.display = "flex";
 
-        const elGameOver = document.getElementById("game-over");
+    const elRound = document.getElementById("stat-round");
+    if (elRound) elRound.style.display = "block";
+
+    const elGameOver = document.getElementById("game-over");
     if (elGameOver) elGameOver.style.display = "none";
+
+    const shopContainer = document.getElementById("shop-container");
+    if (shopContainer) shopContainer.style.display = "none";
 }
 
 function renderStats() {
@@ -552,6 +566,53 @@ function sumHandTrouble() {
     return total;
 }
 
+async function buyCard(cardName) {
+    const cardResp = await fetch(`${CARDS_DIR}/${cardName}.json`);
+    if (!cardResp.ok) return;
+    const card = await cardResp.json();
+
+    if (minerals < card.cost) return;
+    if ((shopInventory[cardName] || 0) <= 0) return;
+
+    minerals -= card.cost;
+    shopInventory[cardName] = (shopInventory[cardName] || 0) - 1;
+    playerDeck.push(cardName);
+
+    renderStats();
+    renderTrouble();
+    await renderShop();
+    updateControls();
+}
+
+async function renderShop() {
+    const container = document.getElementById("shop-container");
+    if (!container) return;
+    container.innerHTML = "";
+
+    for (const entry of shopCards) {
+        const cardName = entry.card;
+        const cardResp = await fetch(`${CARDS_DIR}/${cardName}.json`);
+        if (!cardResp.ok) continue;
+        const card = await cardResp.json();
+
+        const count = shopInventory[cardName] || 0;
+        const canBuy = count > 0 && minerals >= card.cost;
+
+        const cardEl = await createCardElement(card, card.image, count, true, true);
+        cardEl.style.width = "220px";
+        cardEl.style.aspectRatio = "3 / 4.5";
+
+        if (!canBuy) {
+            cardEl.style.filter = "grayscale(1)";
+            cardEl.style.opacity = "0.6";
+        } else {
+            cardEl.onclick = () => buyCard(cardName);
+        }
+
+        container.appendChild(cardEl);
+    }
+}
+
 function endParty() {
     const resources = sumHandResources();
     minerals += resources.minerals;
@@ -564,7 +625,7 @@ function infestParty() {
     endPartyShared()
 }
 
-function endPartyShared() {
+async function endPartyShared() {
     // Return all cards in hand back to the deck (as card name strings,
     // so drawCard can fetch them by filename)
     playerDeck.push(...hand.map(card => card.image || card.img_name || card.name));
@@ -581,7 +642,10 @@ function endPartyShared() {
         gameOver();
     } else {
         roundNum = 2;
+        const shopContainer = document.getElementById("shop-container");
+        if (shopContainer) shopContainer.style.display = "flex";
         renderRound();
+        await renderShop();
         updateControls();
     }
 }
@@ -599,6 +663,9 @@ async function startParty() {
 
     const handContainer = document.getElementById("hand-container");
     if (handContainer) handContainer.style.display = "flex";
+    
+    const shopContainer = document.getElementById("shop-container");
+    if (shopContainer) shopContainer.style.display = "none";
 }
 
 function gameOver() {

@@ -226,6 +226,14 @@
             border-radius: 10px;
             text-shadow: 0 1px 3px rgba(0,0,0,0.7);
         }
+        .shop-container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+            min-height: 320px;
+        }
         .game-trouble {
             display: flex;
             gap: 20px;
@@ -372,6 +380,7 @@
             </div>
             <div class="game-round"><span id="stat-round">1</span></div>
             <div id="hand-container" class="hand-container"></div>
+            <div id="shop-container" class="shop-container"></div>
             <div class="game-controls">
                 <button id="btn-end-party" class="game-btn game-btn-primary">End Party</button>
                 <button id="btn-infest-party" class="game-btn game-btn-infested" style="display:none">End Infested Party</button>
