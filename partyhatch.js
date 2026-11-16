@@ -616,6 +616,12 @@ async function renderShop() {
             cardEl.style.opacity = "1";
             cardEl.onclick = () => buyCard(cardName);
         }
+
+        // Update count text on existing element
+        const countEl = cardEl.querySelector(".card-count");
+        if (countEl) {
+            countEl.textContent = count < 0 ? "∞" : `×${count}`;
+        }
     }
 }
 
