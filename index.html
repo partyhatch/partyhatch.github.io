@@ -253,6 +253,26 @@
             border-radius: 10px;
             text-shadow: 0 1px 3px rgba(0,0,0,0.7);
         }
+        .game-stars {
+            display: flex;
+            gap: 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            flex-direction: row;
+            align-items: center;
+        }
+        .game-stars span {
+            background: rgba(0,0,0,0.45);
+            padding: 4px 10px;
+            border-radius: 10px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        }
         .game-btn-infested {
             background: #ff0000;
             border-color: #ff0000;
@@ -377,6 +397,9 @@
             </div>
             <div class="game-trouble">
                 <span id="stat-trouble">Trouble: 0</span>
+            </div>
+            <div class="game-stars">
+                <span id="stat-stars">Stars: 0</span>
             </div>
             <div class="game-round"><span id="stat-round">1</span></div>
             <div id="hand-container" class="hand-container"></div>

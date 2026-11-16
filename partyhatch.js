@@ -373,6 +373,7 @@ async function startGame(deckFile) {
     await renderHand();
     renderStats();
     renderTrouble();
+    renderStars();
     updateControls();
 
     const handContainer = document.getElementById("hand-container");
@@ -463,6 +464,37 @@ function renderTrouble() {
     }
 }
 
+function renderStars() {
+    const container = document.getElementById("stat-stars");
+    if (!container) return;
+    container.innerHTML = "";
+    container.style.display = "inline-flex";
+    container.style.alignItems = "center";
+    container.style.gap = "4px";
+    container.style.fontSize = "1rem";
+    container.style.fontWeight = "700";
+    container.style.color = "var(--text)";
+    container.style.textShadow = "0 1px 3px rgba(0,0,0,0.7)";
+
+    const totalStars = hand.reduce((sum, card) => sum + (card.stars || 0), 0);
+
+    const yellowValue = Math.min(totalStars < 0 ? 0 : totalStars * 85, 255);
+    container.style.background = `rgba(${yellowValue},${yellowValue},0,0.7)`;
+
+    const text = document.createTextNode("Stars: ");
+    container.appendChild(text);
+
+    for (let i = 0; i < totalStars; i++) {
+        const icon = document.createElement("img");
+        icon.src = `${IMG_DIR}/star.png`;
+        icon.alt = "";
+        icon.style.width = "18px";
+        icon.style.height = "18px";
+        icon.style.display = "block";
+        container.appendChild(icon);
+    }
+}
+
 function renderRound() {
     const elRound = document.getElementById("stat-round");
     const turnString = turn + "/" + ( parties === Infinity ? "∞" : parties )
@@ -544,6 +576,7 @@ async function drawCard() {
     await renderHand();
     renderStats();
     renderTrouble();
+    renderStars();
     updateControls();
 }
 
@@ -583,6 +616,7 @@ async function buyCard(cardName) {
 
     renderStats();
     renderTrouble();
+    renderStars();
     await renderShop();
     updateControls();
 }
@@ -648,6 +682,7 @@ async function endPartyShared() {
 
     renderStats();
     renderTrouble();
+    renderStars();
 
     const handContainer = document.getElementById("hand-container");
     if (handContainer) handContainer.style.display = "none";
@@ -673,6 +708,7 @@ async function startParty() {
     totalTrouble = 0;
     renderRound();
     renderTrouble();
+    renderStars();
     updateControls();
 
     const handContainer = document.getElementById("hand-container");
