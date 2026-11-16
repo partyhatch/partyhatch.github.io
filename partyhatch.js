@@ -573,10 +573,12 @@ async function buyCard(cardName) {
     const card = await cardResp.json();
 
     if (minerals < card.cost) return;
-    if ((shopInventory[cardName] || 0) <= 0) return;
+    if ((shopInventory[cardName] || 0) == 0) return;
 
     minerals -= card.cost;
-    shopInventory[cardName] = (shopInventory[cardName] || 0) - 1;
+    if ( shopInventory[cardName] > 0 ) {
+        shopInventory[cardName] = (shopInventory[cardName] || 0) - 1;
+    }
     playerDeck.push(cardName);
 
     renderStats();
@@ -596,7 +598,7 @@ async function renderShop() {
         const card = await cardResp.json();
 
         const count = shopInventory[cardName] || 0;
-        const canBuy = count > 0 && minerals >= card.cost;
+        const canBuy = ( count > 0 || count == -1 ) && minerals >= card.cost;
 
         // Find existing element or create new one
         let cardEl = container.querySelector(`[data-card="${cardName}"]`);
