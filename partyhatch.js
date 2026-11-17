@@ -187,8 +187,10 @@ async function createCardElement(card, imageName, count, showCount = true, showC
         icon.style.height = "16px";
         icon.style.display = "block";
 
+        const gasCost = ( supply + 1 - startingSupply ) * card.cost; // Each purchase makes it more expensive
         const value = document.createElement("span");
-        value.textContent = card.cost;
+        value.className = "card-cost";
+        value.textContent = (card.gasCost ? gasCost : card.cost);
 
         costBadge.appendChild(icon);
         costBadge.appendChild(value);
@@ -333,6 +335,7 @@ let hand = [];
 let minerals = 0;
 let gas = 0;
 let supply = 0;
+let startingSupply = 0;
 let turn = 0;
 let parties = Infinity;
 let roundNum = 1;
@@ -357,6 +360,7 @@ async function startGame(deckFile) {
     playerDeck = [...(deck.deck || [])];
     shuffle(playerDeck);
     supply = deck.supply != null ? deck.supply : 0;
+    startingSupply = supply;
     parties = deck.parties != null ? deck.parties : Infinity;
     hand = [];
     minerals = 0;
@@ -610,9 +614,10 @@ async function buyCard(cardName) {
     const card = await cardResp.json();
 
     if (card.gasCost) {
-        if (gas < card.cost) return;
+        const gasCost = ( supply + 1 - startingSupply ) * card.cost; // Each purchase makes it more expensive
+        if (gas < gasCost) return;
         if ((shopInventory[cardName] || 0) == 0) return;
-        gas -= card.cost;
+        gas -= gasCost;
         supply += 1;
     } else {
         if (minerals < card.cost) return;
@@ -642,7 +647,8 @@ async function renderShop() {
         const card = await cardResp.json();
 
         const count = shopInventory[cardName] || 0;
-        const canBuy = ( count > 0 || count == -1 ) && (card.gasCost ? gas >= card.cost : minerals >= card.cost);
+        const gasCost = ( supply + 1 - startingSupply ) * card.cost; // Each purchase makes it more expensive
+        const canBuy = ( count > 0 || count == -1 ) && (card.gasCost ? gas >= gasCost : minerals >= card.cost);
 
         // Find existing element or create new one
         let cardEl = container.querySelector(`[data-card="${cardName}"]`);
@@ -667,6 +673,12 @@ async function renderShop() {
         const countEl = cardEl.querySelector(".card-count");
         if (countEl) {
             countEl.textContent = count < 0 ? "∞" : `×${count}`;
+        }
+
+         // Update cost text on existing element
+        const costEl = cardEl.querySelector(".card-cost");
+        if (costEl) {
+            costEl.textContent = (card.gasCost ? gasCost : card.cost);;
         }
     }
 }
