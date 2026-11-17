@@ -96,7 +96,7 @@ async function createCardElement(card, imageName, count, showCount = true, showC
     });
 
     // Render any remaining top-level fields not already shown (e.g. "trouble")
-    const shown = new Set(["name", "image", "img_name", "minerals", "gas", "stars", "trouble", "cost"]);
+    const shown = new Set(["name", "image", "img_name", "minerals", "gas", "stars", "trouble", "cost", "gasCost", "centerResource"]);
     Object.keys(card).forEach((key) => {
         if (!shown.has(key)) {
             const stat = document.createElement("span");
@@ -178,7 +178,7 @@ async function createCardElement(card, imageName, count, showCount = true, showC
         costBadge.style.backdropFilter = "blur(3px)";
 
         const icon = document.createElement("img");
-        icon.src = `${IMG_DIR}/mineral_nobg.png`;
+        icon.src = card.gasCost ? `${IMG_DIR}/gas_nobg.png` : `${IMG_DIR}/mineral_nobg.png`;
         icon.alt = "";
         icon.style.width = "16px";
         icon.style.height = "16px";
@@ -190,6 +190,38 @@ async function createCardElement(card, imageName, count, showCount = true, showC
         costBadge.appendChild(icon);
         costBadge.appendChild(value);
         cardEl.appendChild(costBadge);
+    }
+
+    // Center resource: e.g. "+1" + supply icon, shown at card center.
+    if (card.centerResource) {
+        const centerRes = document.createElement("div");
+        centerRes.style.position = "absolute";
+        centerRes.style.top = "50%";
+        centerRes.style.left = "50%";
+        centerRes.style.transform = "translate(-50%, -50%)";
+        centerRes.style.display = "flex";
+        centerRes.style.alignItems = "center";
+        centerRes.style.gap = "6px";
+        centerRes.style.fontSize = "1.5rem";
+        centerRes.style.fontWeight = "800";
+        centerRes.style.color = "var(--text)";
+        centerRes.style.textShadow = "0 1px 3px rgba(0,0,0,0.7)";
+        centerRes.style.pointerEvents = "none";
+        centerRes.style.zIndex = "2";
+
+        const text = document.createElement("span");
+        text.textContent = `+${card.centerResource.value}`;
+        centerRes.appendChild(text);
+
+        const icon = document.createElement("img");
+        icon.src = `${IMG_DIR}/${card.centerResource.image}`;
+        icon.alt = "";
+        icon.style.width = "28px";
+        icon.style.height = "28px";
+        icon.style.display = "block";
+        centerRes.appendChild(icon);
+
+        cardEl.appendChild(centerRes);
     }
 
     return cardEl;
@@ -363,7 +395,8 @@ async function startGame(deckFile) {
     roundNum = 1;
 
     shopInventory = {};
-    shopCards = deck.cards || [];
+    shopCards = [{ card: "overlord", count: -1 }, ...(deck.cards || [])];
+    shopInventory["overlord"] = -1;
     deck.cards.forEach(entry => {
         shopInventory[entry.card] = entry.count != null ? entry.count : 1;
     });
@@ -605,14 +638,20 @@ async function buyCard(cardName) {
     if (!cardResp.ok) return;
     const card = await cardResp.json();
 
-    if (minerals < card.cost) return;
-    if ((shopInventory[cardName] || 0) == 0) return;
-
-    minerals -= card.cost;
-    if ( shopInventory[cardName] > 0 ) {
-        shopInventory[cardName] = (shopInventory[cardName] || 0) - 1;
+    if (card.gasCost) {
+        if (gas < card.cost) return;
+        if ((shopInventory[cardName] || 0) == 0) return;
+        gas -= card.cost;
+        supply += 1;
+    } else {
+        if (minerals < card.cost) return;
+        if ((shopInventory[cardName] || 0) == 0) return;
+        minerals -= card.cost;
+        if ( shopInventory[cardName] > 0 ) {
+            shopInventory[cardName] = (shopInventory[cardName] || 0) - 1;
+        }
+        playerDeck.push(cardName);
     }
-    playerDeck.push(cardName);
 
     renderStats();
     renderTrouble();
@@ -632,7 +671,7 @@ async function renderShop() {
         const card = await cardResp.json();
 
         const count = shopInventory[cardName] || 0;
-        const canBuy = ( count > 0 || count == -1 ) && minerals >= card.cost;
+        const canBuy = ( count > 0 || count == -1 ) && (card.gasCost ? gas >= card.cost : minerals >= card.cost);
 
         // Find existing element or create new one
         let cardEl = container.querySelector(`[data-card="${cardName}"]`);

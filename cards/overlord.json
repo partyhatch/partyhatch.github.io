@@ -1,0 +1,10 @@
+{
+    "name": "Overlord",
+    "image": "overlord_model",
+    "cost": 1,
+    "gasCost": true,
+    "centerResource": {
+        "value": 1,
+        "image": "supply_zerg_nobg.png"
+    }
+}
