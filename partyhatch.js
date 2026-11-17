@@ -67,6 +67,9 @@ async function createCardElement(card, imageName, count, showCount = true, showC
     if ("gas" in card && card.gas != 0) {
         resourceParts.push({ value: card.gas, image: "gas_nobg.png" });
     }
+    if ("supply" in card && card.supply) {
+        resourceParts.push({ value: card.supply, image: "supply_zerg_nobg.png" });
+    }
 
     const resources = document.createElement("div");
     resources.className = "card-resources";
@@ -96,7 +99,7 @@ async function createCardElement(card, imageName, count, showCount = true, showC
     });
 
     // Render any remaining top-level fields not already shown (e.g. "trouble")
-    const shown = new Set(["name", "image", "img_name", "minerals", "gas", "stars", "trouble", "cost", "gasCost", "centerResource"]);
+    const shown = new Set(["name", "image", "img_name", "minerals", "gas", "stars", "trouble", "cost", "gasCost", "supply"]);
     Object.keys(card).forEach((key) => {
         if (!shown.has(key)) {
             const stat = document.createElement("span");
@@ -190,38 +193,6 @@ async function createCardElement(card, imageName, count, showCount = true, showC
         costBadge.appendChild(icon);
         costBadge.appendChild(value);
         cardEl.appendChild(costBadge);
-    }
-
-    // Center resource: e.g. "+1" + supply icon, shown at card center.
-    if (card.centerResource) {
-        const centerRes = document.createElement("div");
-        centerRes.style.position = "absolute";
-        centerRes.style.top = "50%";
-        centerRes.style.left = "50%";
-        centerRes.style.transform = "translate(-50%, -50%)";
-        centerRes.style.display = "flex";
-        centerRes.style.alignItems = "center";
-        centerRes.style.gap = "6px";
-        centerRes.style.fontSize = "1.5rem";
-        centerRes.style.fontWeight = "800";
-        centerRes.style.color = "var(--text)";
-        centerRes.style.textShadow = "0 1px 3px rgba(0,0,0,0.7)";
-        centerRes.style.pointerEvents = "none";
-        centerRes.style.zIndex = "2";
-
-        const text = document.createElement("span");
-        text.textContent = `+${card.centerResource.value}`;
-        centerRes.appendChild(text);
-
-        const icon = document.createElement("img");
-        icon.src = `${IMG_DIR}/${card.centerResource.image}`;
-        icon.alt = "";
-        icon.style.width = "28px";
-        icon.style.height = "28px";
-        icon.style.display = "block";
-        centerRes.appendChild(icon);
-
-        cardEl.appendChild(centerRes);
     }
 
     return cardEl;
