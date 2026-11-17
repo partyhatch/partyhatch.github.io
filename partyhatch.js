@@ -765,9 +765,11 @@ function gameOver() {
 function hideControls() {
     const btnEndParty = document.getElementById("btn-end-party");
     const btnStartParty = document.getElementById("btn-start-party");
+    const btnInfestParty = document.getElementById("btn-infest-party");
 
     if (btnEndParty) btnEndParty.style.display = "none";
     if (btnStartParty) btnStartParty.style.display = "none";
+    if (btnInfestParty) btnInfestParty.style.display = "none";
 }
 
 function updateControls() {
